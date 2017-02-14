@@ -27,11 +27,16 @@ function turtleBound(string, delta, alpha) {
 			yMin = 0,
 			yMax = 0;
 
+	let stack = [];
 	for (const c of string) {
 		if (c === '+') {
 		  alpha += delta;
 		} else if (c === '-') {
 		  alpha -= delta;
+		} else if (c === '[') {
+			stack.push({x, y, alpha});
+		} else if (c === ']') {
+			({x, y, alpha} = stack.pop());
 		} else {
 			let code = c.charCodeAt(0);
 			if (code >= 65 && code <= 90 || code >= 97 && code <= 122) { // A-Z, a-z
@@ -54,6 +59,7 @@ function turtleDraw(ctx, string, delta, alpha, scale) {
 	let x = (-xMin + (bound - (xMax - xMin)) / 2) * d;
 	let y = (-yMin + (bound - (yMax - yMin)) / 2) * d;
 
+	let stack = [];
 	ctx.beginPath();
 	ctx.moveTo(x, scale - y);
 	for (const c of string) {
@@ -61,6 +67,11 @@ function turtleDraw(ctx, string, delta, alpha, scale) {
 		  alpha += delta;
 		} else if (c === '-') {
 		  alpha -= delta;
+		} else if (c === '[') {
+			stack.push({x, y, alpha});
+		} else if (c === ']') {
+			({x, y, alpha} = stack.pop());
+			ctx.moveTo(x, scale - y);
 		} else {
 			let code = c.charCodeAt(0);
 			if (code >= 65 && code <= 90) { // A-Z

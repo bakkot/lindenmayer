@@ -1,9 +1,6 @@
 "use strict";
 
 
-let scale, clear;
-
-
 const quadKochStepper = (ctx, clear, scale) => turtleStepper({
 	system: new LSystem(
 		'F-F-F-F',
@@ -179,6 +176,37 @@ const quadGopher = (ctx, clear, scale) => turtleStepper({
 	scale
 });
 
+const bush1 = (ctx, clear, scale) => turtleStepper({
+	system: new LSystem(
+		'F',
+		{
+			F: 'F[+F]F[-F]F'
+		}
+	),
+	delta: Math.PI / 7,
+	alpha: Math.PI / 2,
+	ctx,
+	clear,
+	scale
+});
+
+const penrose = (ctx, clear, scale) => turtleStepper({
+	system: new LSystem(
+		'[7]++[7]++[7]++[7]++[7]',
+		{
+			F: '',
+			6: '8F++9F----7F[-8F----6F]++',
+			7: '+8F--9F[---6F--7F]+',
+			8: '-6F++7F[+++8F++9F]-',
+			9: '--8F++++6F[+9F++++7F]--7F'
+		}
+	),
+	delta: Math.PI / 5,
+	ctx,
+	clear,
+	scale
+});
+
 addEventListener('load', () => {
 	const canvas = document.querySelector('canvas');
 	const ctx = canvas.getContext('2d');
@@ -189,7 +217,7 @@ addEventListener('load', () => {
 		ctx.clearRect(-2, -2, scale + 4, scale + 4);
 	};
 
-	const step = quadGopher(ctx, clear, scale);
+	const step = penrose(ctx, clear, scale);
 
 	canvas.addEventListener('click', step);
 });
