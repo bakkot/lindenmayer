@@ -1,32 +1,21 @@
 "use strict";
 
+const quadKoch = new TurtleSystem(
+  'F-F-F-F',
+  {
+    F: 'F-F+F+FF-F-F+F'
+  },
+  Math.PI / 2
+);
 
-const quadKochStepper = (ctx, clear, scale) => turtleStepper({
-  system: new LSystem(
-    'F-F-F-F',
-    {
-      F: 'F-F+F+FF-F-F+F'
-    }
-  ),
-  delta: Math.PI / 2,
-  ctx,
-  clear,
-  scale
-});
-
-const quadFlake = (ctx, clear, scale) => turtleStepper({
-  system: new LSystem(
-    '-F',
-    {
-      F: 'F+F-F-F+F'
-    }
-  ),
-  delta: Math.PI / 2,
-  alpha: -Math.PI / 2,
-  ctx,
-  clear,
-  scale
-});
+const quadFlake = new TurtleSystem(
+  '-F',
+  {
+    F: 'F+F-F-F+F'
+  },
+ Math.PI / 2,
+ Math.PI / 2
+);
 
 const islandLake = new TurtleSystem(
   'F+F+F+F',
@@ -152,7 +141,7 @@ addEventListener('load', () => {
     ctx.clearRect(-2, -2, scale + 4, scale + 4);
   };
 
-  const step = islandLake.getStepper(ctx, clear, scale);
+  const step = quadFlake.getStepper(ctx, clear, scale);
 
   canvas.addEventListener('click', step);
 });
