@@ -9,6 +9,10 @@ class LSystem {
     this.axiom = axiom;
     this.production = Object.assign(Object.create(null), production);
 
+    if (Object.keys(production).some(c => c.length !== 1)) {
+      throw new Error('LSystem production keys must be characters');
+    }
+
     this.regex = new RegExp('[' + Object.keys(production).join('') + ']', 'g');
   }
 }
