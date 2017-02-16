@@ -2,19 +2,14 @@
 
 class LSystem {
   iter(str) {
-    return Array.prototype.map.call(str, c => this.production[c]).join('');
+    return str.replace(this.regex, c => this.production[c]);
   }
 
   constructor(axiom, production) {
     this.axiom = axiom;
     this.production = Object.assign(Object.create(null), production);
 
-    for (const rhs of Object.values(production)) {
-      for (const c of rhs) {
-        if (typeof this.production[c] !== 'undefined') continue;
-        this.production[c] = [c];
-      }
-    }
+    this.regex = new RegExp('[' + Object.keys(production).join('') + ']', 'g');
   }
 }
 
