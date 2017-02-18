@@ -5,13 +5,51 @@
     <title>Lindenmayer Systems</title>
     <script src="lindenmayer.js"></script>
     <script src="main.js"></script>
+    <script src="ui.js"></script>
     <style>
-    canvas {
-    	border: 1px dashed black;
-    }
+      canvas {
+      	border: 1px dashed black;
+        user-select: none;
+      }
+
+      .angle-circle {
+        display: inline-block;
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 2px solid black;
+      }
+
+      .angle-pointer-box {
+        position: absolute;
+        top: 50%;
+        bottom: 50%;
+        width: 100%;
+        height: 2px;
+        transform: rotate(180deg);
+      }
+
+      .angle-pointer {
+        margin-left: 5%;
+        width: 35%;
+        height: 100%;
+        background: grey;
+      }
+
+      .input {
+        display: inline-block;
+      }
     </style>
   </head>
   <body>
     <canvas width=500 height=500></canvas>
+    <div class="input">
+      <div class="angle-circle">
+        <div class="angle-pointer-box">
+          <div class="angle-pointer"></div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

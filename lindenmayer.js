@@ -2,7 +2,7 @@
 
 class LSystem {
   iter(str) {
-    return str.replace(this.regex, c => this.production[c]);
+   return str.replace(this.regex, c => this.production[c]);
   }
 
   constructor(axiom, production) {
@@ -25,22 +25,27 @@ class TurtleSystem extends LSystem {
     this.alpha = alpha;
   }
 
-  getStepper(ctx, clear, scale) {
-    let {delta, alpha, iter} = this;
-    iter = iter.bind(this);
+  render(ctx, scale, string) {
+    TurtleSystem.draw(ctx, scale, string, this.delta, this.alpha);
+  }
+
+  getStepper(ctx, scale, clear) {
     let string = this.axiom;
 
     let first = true;
-    return function() {
+    const stepper = () => {
       clear();
       if (first) {
         first = false;
-        TurtleSystem.draw(ctx, scale, string, delta, alpha);
       } else {
-        string = iter(string);
-        TurtleSystem.draw(ctx, scale, string, delta, alpha);
+        string = this.iter(string);
       }
-    }
+      this.render(ctx, scale, string);
+    };
+
+    stepper.current = () => string;
+    
+    return stepper;
   }
 
   static bound(string, delta, alpha) {

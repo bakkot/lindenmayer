@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>angles</title>
+    <style>
+      .angle-circle {
+        position: relative;
+      	width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 2px solid black;
+      }
+
+      .angle-pointer-box {
+        position: absolute;
+        top: 50%;
+        bottom: 50%;
+        width: 100%;
+        height: 2px;
+        transform: rotate(180deg);
+      }
+
+      .angle-pointer {
+        margin-left: 5%;
+        width: 35%;
+        height: 100%;
+        background: grey;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="angle-circle">
+      <div class="angle-pointer-box">
+        <div class="angle-pointer"></div>
+      </div>
+    </div>
+
+    <script>
+      addEventListener('load', () => {
+        const circle = document.querySelector('.angle-circle');
+        const box = document.querySelector('.angle-pointer-box');
+        let dragging = false;
+
+        function consumeAngleEvent(e) {
+          const circlePos = circle.getBoundingClientRect();
+          const angle = Math.atan2((circlePos.top + circlePos.height / 2) - e.clientY , e.clientX - (circlePos.left + circlePos.width / 2));
+
+          setAngle(angle);
+
+          console.log(angle);
+
+          // and then presumably fire a callback
+        }
+
+        function setAngle(angle) {
+          box.style.transform = 'rotate(' + (Math.PI - angle) + 'rad)';
+        }
+
+        circle.addEventListener('mousedown', e => {
+          dragging = true;
+          consumeAngleEvent(e);
+        });
+
+        document.addEventListener('mousemove', e => {
+          if (!dragging) return;
+          consumeAngleEvent(e);
+        });
+
+        document.addEventListener('mouseup', () => {
+          dragging = false;
+        });
+      });
+    </script>
+  </body>
+</html>

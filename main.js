@@ -131,17 +131,3 @@ const penrose = new TurtleSystem(
   Math.PI / 5
 );
 
-addEventListener('load', () => {
-  const canvas = document.querySelector('canvas');
-  const ctx = canvas.getContext('2d');
-  const scale = canvas.width - 4;
-  ctx.translate(2, 2);
-
-  function clear() {
-    ctx.clearRect(-2, -2, scale + 4, scale + 4);
-  };
-
-  const step = quadFlake.getStepper(ctx, clear, scale);
-
-  canvas.addEventListener('click', step);
-});
