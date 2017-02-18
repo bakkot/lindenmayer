@@ -67,16 +67,13 @@ class TurtleSystem extends LSystem {
         stack.push({x, y, alpha});
       } else if (c === ']') {
         ({x, y, alpha} = stack.pop());
-      } else {
-        let code = c.charCodeAt(0);
-        if (code >= 65 && code <= 90 || code >= 97 && code <= 122) { // A-Z, a-z
-          x += Math.cos(alpha);
-          y += Math.sin(alpha);
-          xMin = Math.min(xMin, x);
-          xMax = Math.max(xMax, x);
-          yMin = Math.min(yMin, y);
-          yMax = Math.max(yMax, y);
-        }
+      } else if (c === 'F' || c === 'f') {
+        x += Math.cos(alpha);
+        y += Math.sin(alpha);
+        xMin = Math.min(xMin, x);
+        xMax = Math.max(xMax, x);
+        yMin = Math.min(yMin, y);
+        yMax = Math.max(yMax, y);
       }
     }
     return {xMin, xMax, yMin, yMax};
@@ -102,17 +99,14 @@ class TurtleSystem extends LSystem {
       } else if (c === ']') {
         ({x, y, alpha} = stack.pop());
         ctx.moveTo(x, scale - y);
-      } else {
-        let code = c.charCodeAt(0);
-        if (code >= 65 && code <= 90) { // A-Z
-          x += d * Math.cos(alpha);
-          y += d * Math.sin(alpha);
-          ctx.lineTo(x, scale - y);
-        } else if (code >= 97 && code <= 122) { // a-z
-          x += d * Math.cos(alpha);
-          y += d * Math.sin(alpha);
-          ctx.moveTo(x, scale - y);
-        }
+      } else if (c === 'F') {
+        x += d * Math.cos(alpha);
+        y += d * Math.sin(alpha);
+        ctx.lineTo(x, scale - y);
+      } else if (c === 'f') {
+        x += d * Math.cos(alpha);
+        y += d * Math.sin(alpha);
+        ctx.moveTo(x, scale - y);
       }
     }
     ctx.stroke();
