@@ -1,6 +1,6 @@
 // ugh, not this
-let current = penrose;
-current = new TurtleSystem(current.axiom, current.production, current.delta, current.alpha);
+// let current = penrose;
+// current = new TurtleSystem(current.axiom, current.production, current.delta, current.alpha);
 
 
 function initAngleSelector(callback) {
@@ -48,18 +48,46 @@ addEventListener('load', () => {
     ctx.clearRect(-2, -2, scale + 4, scale + 4);
   };
 
-  const step = current.getStepper(ctx, scale, clear);
+  let current, step;
 
-  canvas.addEventListener('click', step);
+  canvas.addEventListener('click', () => {
+    if (step) step();
+  });
 
   const setPickerAngle = initAngleSelector(throttle(angle => {
+    if (!current) return;
     clear();
-    console.log(current.delta);
     current.delta = angle;
     current.render(ctx, scale, step.current());
   }, 100));
 
-  setPickerAngle(current.delta);
+  // setPickerAngle(current.delta);
+
+  const select = document.querySelector('select');
+  for (let name of Object.keys(systems)) {
+    const option = document.createElement('option');
+    option.innerText = name;
+    select.appendChild(option);
+  }
+
+  function selectChange() {
+    clear();
+    current = systems[select.value];
+    step = current.getStepper(ctx, scale, clear);
+    setPickerAngle(current.delta);
+  }
+
+  select.addEventListener('change', selectChange);
+  selectChange();
+
+  window.animate = () => {
+    setInterval(() => {
+      clear();
+      current.delta += Math.PI / 400;
+      setPickerAngle(current.delta);
+      current.render(ctx, scale, step.current());
+    }, 50);
+  }
 });
 
 
