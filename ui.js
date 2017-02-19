@@ -1,8 +1,3 @@
-// ugh, not this
-// let current = penrose;
-// current = new TurtleSystem(current.axiom, current.production, current.delta, current.alpha);
-
-
 function initAngleSelector(callback) {
   const circle = document.querySelector('.angle-circle');
   const box = document.querySelector('.angle-pointer-box');
@@ -73,6 +68,13 @@ addEventListener('load', () => {
   function selectChange() {
     clear();
     current = systems[select.value];
+    current = new TurtleSystem( // ugh
+      current.axiom,
+      current.production,
+      current.delta,
+      current.alpha
+    );
+    current.origDelta = current.delta;
     step = current.getStepper(ctx, scale, clear);
     setPickerAngle(current.delta);
   }
@@ -80,14 +82,38 @@ addEventListener('load', () => {
   select.addEventListener('change', selectChange);
   selectChange();
 
-  window.animate = () => {
-    setInterval(() => {
-      clear();
-      current.delta += Math.PI / 400;
-      setPickerAngle(current.delta);
-      current.render(ctx, scale, step.current());
-    }, 50);
-  }
+
+  const animate = document.getElementById('animate');
+  let interval = 0;
+  animate.addEventListener('click', () => {
+    if (!current) return;
+
+    if (!interval) {
+      interval = setInterval(() => {
+        clear();
+        current.delta -= Math.PI / 400;
+        setPickerAngle(current.delta);
+        current.render(ctx, scale, step.current());
+      }, 50);
+      animate.value = '\u{2590}\u{2590} animate';
+    } else {
+      clearInterval(interval);
+      interval = 0;
+      animate.value = '\u{25b6} animate';
+    }
+  });
+
+  document.getElementById('reset').addEventListener('click', () => {
+    clear();
+    if (interval) {
+      clearInterval(interval);
+      interval = 0;
+      animate.value = '\u{25b6} animate';
+    }
+    if (current.origDelta !== void 0) current.delta = current.origDelta;
+    step = current.getStepper(ctx, scale, clear);
+    setPickerAngle(current.delta);
+  });
 });
 
 
