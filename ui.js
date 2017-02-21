@@ -34,10 +34,14 @@ function initAngleSelector(callback) {
 }
 
 addEventListener('load', () => {
+  // set up canvas
   const canvas = document.querySelector('canvas');
   const ctx = canvas.getContext('2d');
-  const w = canvas.width - 4;
-  const h = canvas.height - 4;
+  let w = canvas.width - 4;
+  let h = canvas.height - 4;
+  const origW = w;
+  const origH = h;
+  const origBorder = canvas.style.border;
   ctx.translate(2, 2);
 
   function clear() {
@@ -47,18 +51,17 @@ addEventListener('load', () => {
   let current, step;
 
   canvas.addEventListener('click', () => {
-    if (step) step();
+    if (step) step(w, h);
   });
 
   const setPickerAngle = initAngleSelector(throttle(angle => {
-    if (!current) return;
     clear();
     current.delta = angle;
     current.render(ctx, w, h, step.current());
   }, 100));
 
-  // setPickerAngle(current.delta);
 
+  // set up selector
   const select = document.querySelector('select');
   for (let name of Object.keys(systems)) {
     const option = document.createElement('option');
@@ -76,7 +79,7 @@ addEventListener('load', () => {
       current.alpha
     );
     current.origDelta = current.delta;
-    step = current.getStepper(ctx, w, h, clear);
+    step = current.getStepper(ctx, clear);
     setPickerAngle(current.delta);
     current.render(ctx, w, h, step.current());
   }
@@ -85,11 +88,10 @@ addEventListener('load', () => {
   selectChange();
 
 
+  // set up animate button / event
   const animate = document.getElementById('animate');
   let interval = 0;
-  animate.addEventListener('click', () => {
-    if (!current) return;
-
+  const playPause = () => {
     if (!interval) {
       interval = setInterval(() => {
         clear();
@@ -103,9 +105,11 @@ addEventListener('load', () => {
       interval = 0;
       animate.value = '\u{25b6} animate';
     }
-  });
+  };
+  animate.addEventListener('click', playPause);
 
-  document.getElementById('reset').addEventListener('click', () => {
+  // set up reset button
+  const reset = () => {
     clear();
     if (interval) {
       clearInterval(interval);
@@ -113,12 +117,51 @@ addEventListener('load', () => {
       animate.value = '\u{25b6} animate';
     }
     if (current.origDelta !== void 0) current.delta = current.origDelta;
-    step = current.getStepper(ctx, w, h, clear);
+    step = current.getStepper(ctx, clear);
     setPickerAngle(current.delta);
+    current.render(ctx, w, h, step.current());
+  };
+  document.getElementById('reset').addEventListener('click', reset);
+
+  // set up fullscreening
+  const reqFullscreen = canvas.webkitRequestFullScreen
+    ? canvas.webkitRequestFullScreen.bind(canvas)
+    :  canvas.mozRequestFullScreen
+      ? canvas.mozRequestFullScreen.bind(canvas)
+      : null;
+  let fullscreen;
+  if (reqFullscreen) {
+    fullscreen = () => {
+      reqFullscreen();
+      canvas.style.border = '';
+      w = canvas.width = screen.width;
+      h = canvas.height = screen.height;
+      current.render(ctx, w, h, step.current());
+    };
+    const ele = document.getElementById('fullscreen');
+    ele.style.display = '';
+
+    ele.addEventListener('click', fullscreen);
+
+    const exitFullScreen = () => {
+      if (!document.webkitIsFullScreen && !document.mozFullScreen) {
+        canvas.style.border = origBorder;
+        w = canvas.width = origW;
+        h = canvas.height = origH;
+        current.render(ctx, w, h, step.current());
+      }
+    };
+    document.addEventListener('webkitfullscreenchange', exitFullScreen);
+    document.addEventListener('mozfullscreenchange', exitFullScreen);
+  }
+
+  // set up keyboard
+  document.body.addEventListener('keypress', e => {
+    if (e.key == ' ') playPause();
+    else if (e.key == 'r') reset();
+    else if (fullscreen && e.key == 'f') fullscreen();
   });
 });
-
-
 
 function throttle(func, delay) {
   let previous = 0;

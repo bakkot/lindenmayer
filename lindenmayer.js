@@ -29,10 +29,10 @@ class TurtleSystem extends LSystem {
     TurtleSystem.draw(ctx, w, h, string, this.delta, this.alpha);
   }
 
-  getStepper(ctx, w, h, clear) {
+  getStepper(ctx, clear) {
     let string = this.axiom;
 
-    const stepper = () => {
+    const stepper = (w, h) => {
       clear();
       string = this.iter(string);
       this.render(ctx, w, h, string);
@@ -53,7 +53,7 @@ class TurtleSystem extends LSystem {
         yMax = 0;
 
     let stack = [];
-    for (const c of string) {
+    for (let c of string) {
       if (c === '+') {
         alpha += delta;
       } else if (c === '-') {
@@ -78,13 +78,13 @@ class TurtleSystem extends LSystem {
     let {xMin, xMax, yMin, yMax} = TurtleSystem.bound(string, delta, alpha);
     let bound = Math.max(xMax - xMin, yMax - yMin);
     let d = Math.min(w / (xMax - xMin), h / (yMax - yMin));
-    let x = (w - d * (xMax + xMin)) / 2;
-    let y = (h - d * (yMax + yMin)) / 2;;
+    let x = (w - d * (xMax + xMin)) / 2; // to satisfy x + d * xMin = w - (x + d * xMax)
+    let y = (h - d * (yMax + yMin)) / 2;
 
     let stack = [];
     ctx.beginPath();
     ctx.moveTo(x, h - y);
-    for (const c of string) {
+    for (let c of string) {
       if (c === '+') {
         alpha += delta;
       } else if (c === '-') {
