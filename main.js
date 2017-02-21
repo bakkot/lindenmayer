@@ -1,6 +1,14 @@
 'use strict';
 
 let systems = {
+  squar: new TurtleSystem(
+    'F-F-F-F-',
+    {
+      F: 'F-FF--F-F'
+    },
+    Math.PI / 2
+  ),
+
   quadKoch: new TurtleSystem(
     'F-F-F-F',
     {
@@ -232,14 +240,6 @@ let systems = {
       R: '-L+F+L-'
     },
     Math.PI / 4
-  ),
-
-  squar: new TurtleSystem(
-    'F-F-F-F-',
-    {
-      F: 'F-FF--F-F'
-    },
-    Math.PI / 2
   ),
 
   seirp2: new TurtleSystem(
