@@ -36,11 +36,12 @@ function initAngleSelector(callback) {
 addEventListener('load', () => {
   const canvas = document.querySelector('canvas');
   const ctx = canvas.getContext('2d');
-  const scale = canvas.width - 4;
+  const w = canvas.width - 4;
+  const h = canvas.height - 4;
   ctx.translate(2, 2);
 
   function clear() {
-    ctx.clearRect(-2, -2, scale + 4, scale + 4);
+    ctx.clearRect(-2, -2, w + 4, h + 4);
   };
 
   let current, step;
@@ -53,7 +54,7 @@ addEventListener('load', () => {
     if (!current) return;
     clear();
     current.delta = angle;
-    current.render(ctx, scale, step.current());
+    current.render(ctx, w, h, step.current());
   }, 100));
 
   // setPickerAngle(current.delta);
@@ -75,8 +76,9 @@ addEventListener('load', () => {
       current.alpha
     );
     current.origDelta = current.delta;
-    step = current.getStepper(ctx, scale, clear);
+    step = current.getStepper(ctx, w, h, clear);
     setPickerAngle(current.delta);
+    current.render(ctx, w, h, step.current());
   }
 
   select.addEventListener('change', selectChange);
@@ -93,7 +95,7 @@ addEventListener('load', () => {
         clear();
         current.delta -= Math.PI / 400;
         setPickerAngle(current.delta);
-        current.render(ctx, scale, step.current());
+        current.render(ctx, w, h, step.current());
       }, 50);
       animate.value = '\u{2590}\u{2590} animate';
     } else {
@@ -111,7 +113,7 @@ addEventListener('load', () => {
       animate.value = '\u{25b6} animate';
     }
     if (current.origDelta !== void 0) current.delta = current.origDelta;
-    step = current.getStepper(ctx, scale, clear);
+    step = current.getStepper(ctx, w, h, clear);
     setPickerAngle(current.delta);
   });
 });

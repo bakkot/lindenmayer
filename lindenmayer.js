@@ -25,22 +25,17 @@ class TurtleSystem extends LSystem {
     this.alpha = alpha;
   }
 
-  render(ctx, scale, string) {
-    TurtleSystem.draw(ctx, scale, string, this.delta, this.alpha);
+  render(ctx, w, h, string) {
+    TurtleSystem.draw(ctx, w, h, string, this.delta, this.alpha);
   }
 
-  getStepper(ctx, scale, clear) {
+  getStepper(ctx, w, h, clear) {
     let string = this.axiom;
 
-    let first = true;
     const stepper = () => {
       clear();
-      if (first) {
-        first = false;
-      } else {
-        string = this.iter(string);
-      }
-      this.render(ctx, scale, string);
+      string = this.iter(string);
+      this.render(ctx, w, h, string);
     };
 
     stepper.current = () => string;
@@ -79,16 +74,16 @@ class TurtleSystem extends LSystem {
     return {xMin, xMax, yMin, yMax};
   }
 
-  static draw(ctx, scale, string, delta, alpha) {
+  static draw(ctx, w, h, string, delta, alpha) {
     let {xMin, xMax, yMin, yMax} = TurtleSystem.bound(string, delta, alpha);
     let bound = Math.max(xMax - xMin, yMax - yMin);
-    let d = scale / bound;
-    let x = (-xMin + (bound - (xMax - xMin)) / 2) * d;
-    let y = (-yMin + (bound - (yMax - yMin)) / 2) * d;
+    let d = Math.min(w / (xMax - xMin), h / (yMax - yMin));
+    let x = (w - d * (xMax + xMin)) / 2;
+    let y = (h - d * (yMax + yMin)) / 2;;
 
     let stack = [];
     ctx.beginPath();
-    ctx.moveTo(x, scale - y);
+    ctx.moveTo(x, h - y);
     for (const c of string) {
       if (c === '+') {
         alpha += delta;
@@ -98,15 +93,15 @@ class TurtleSystem extends LSystem {
         stack.push({x, y, alpha});
       } else if (c === ']') {
         ({x, y, alpha} = stack.pop());
-        ctx.moveTo(x, scale - y);
+        ctx.moveTo(x, h - y);
       } else if (c === 'F') {
         x += d * Math.cos(alpha);
         y += d * Math.sin(alpha);
-        ctx.lineTo(x, scale - y);
+        ctx.lineTo(x, h - y);
       } else if (c === 'f') {
         x += d * Math.cos(alpha);
         y += d * Math.sin(alpha);
-        ctx.moveTo(x, scale - y);
+        ctx.moveTo(x, h - y);
       }
     }
     ctx.stroke();
